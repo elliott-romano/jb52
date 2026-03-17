@@ -126,7 +126,8 @@ export function ScrollySite() {
           return;
         }
 
-        const nextIndex = Number(visible.target.dataset.index);
+        const target = visible.target as HTMLElement;
+        const nextIndex = Number(target.dataset.index);
         setActiveSection(nextIndex);
       },
       {
