@@ -184,12 +184,14 @@ export function ScrollySite() {
                 <div
                   className={`story-panel__grid ${section.layout === "hero" ? "story-panel__grid--hero" : ""}`}
                 >
-                  <p className="story-panel__eyebrow story-reveal story-reveal--1">{section.eyebrow}</p>
+                  {section.layout === "hero" ? null : (
+                    <p className="story-panel__eyebrow story-reveal story-reveal--1">{section.eyebrow}</p>
+                  )}
 
                   {section.layout === "hero" ? (
                     <div className="hero-panel">
                       <Logo className="hero-panel__logo story-reveal story-reveal--2" />
-                      <h3 className="hero-panel__lede story-reveal story-reveal--3">{section.body?.[0]}</h3>
+                      <h2 className="hero-panel__lede story-reveal story-reveal--3">{section.body?.[0]}</h2>
                     </div>
                   ) : null}
 
@@ -199,16 +201,16 @@ export function ScrollySite() {
                         <h2 className="copy-panel__title story-reveal story-reveal--1">{section.title}</h2>
                       ) : null}
                       {section.body?.map((paragraph) => (
-                        <h3 className="copy-panel__body story-reveal story-reveal--2" key={paragraph}>
+                        <h2 className="copy-panel__body story-reveal story-reveal--2" key={paragraph}>
                           {paragraph}
-                        </h3>
+                        </h2>
                       ))}
                       {section.list ? (
                         <div className="copy-panel__list">
                           {section.list.map((item) => (
-                            <h3 className="copy-panel__body story-reveal story-reveal--2" key={item}>
+                            <h2 className="copy-panel__body story-reveal story-reveal--2" key={item}>
                               {item}
-                            </h3>
+                            </h2>
                           ))}
                         </div>
                       ) : null}
@@ -240,8 +242,8 @@ export function ScrollySite() {
 
                   {section.layout === "contact" ? (
                     <div className="contact-panel">
-                      <h3 className="contact-panel__prompt story-reveal story-reveal--2">{section.body?.[0]}</h3>
-                      <h3 className="contact-panel__prompt story-reveal story-reveal--3">{section.body?.[1]}</h3>
+                      <h2 className="contact-panel__prompt story-reveal story-reveal--2">{section.body?.[0]}</h2>
+                      <h2 className="contact-panel__prompt story-reveal story-reveal--3">{section.body?.[1]}</h2>
                       <a
                         className="contact-panel__email story-reveal story-reveal--4"
                         href="mailto:hello@JB52.com"

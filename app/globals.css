@@ -264,11 +264,11 @@ button {
 }
 
 .hero-panel__lede {
-  max-width: 38rem;
+  max-width: 72rem;
   margin: 0 0 clamp(1.5rem, 5vh, 4rem);
-  font-size: var(--h5);
+  font-size: clamp(1.5rem, 2.35vw, 1.85rem);
   line-height: 1.08;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.045em;
   font-family: var(--font-sans);
   font-weight: 400;
 }
@@ -298,10 +298,23 @@ button {
 }
 
 .copy-panel__body,
-.copy-panel__list,
+.contact-panel__prompt {
+  max-width: 52rem;
+  margin: 0 0 1rem;
+  font-size: clamp(1.6rem, 2.35vw, 2.75rem);
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  font-family: var(--font-sans);
+  font-weight: 400;
+}
+
+.copy-panel__list {
+  padding: 0;
+  list-style: none;
+}
+
 .bio-panel__role,
 .bio-panel__note,
-.contact-panel__prompt,
 .contact-panel__email {
   max-width: 38rem;
   margin: 0 0 1rem;
@@ -310,11 +323,6 @@ button {
   letter-spacing: -0.035em;
   font-family: var(--font-sans);
   font-weight: 400;
-}
-
-.copy-panel__list {
-  padding: 0;
-  list-style: none;
 }
 
 .bio-panel {
@@ -368,10 +376,7 @@ button {
 }
 
 .contact-panel__prompt {
-  max-width: 36rem;
   margin-bottom: 0.35rem;
-  font-size: var(--h5);
-  line-height: 1.08;
 }
 
 .contact-panel__email {
@@ -456,6 +461,12 @@ button {
   .contact-panel__prompt,
   .contact-panel__email {
     max-width: none;
+  }
+
+  .copy-panel__body,
+  .contact-panel__prompt {
+    font-size: clamp(1.7rem, 7vw, 2.35rem);
+    line-height: 1.06;
   }
 
   .bio-panel__portrait {
