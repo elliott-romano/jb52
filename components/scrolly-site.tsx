@@ -6,20 +6,36 @@ import { useEffect, useState } from "react";
 import { Logo } from "@/components/logo";
 
 type Section = {
+  id: string;
   eyebrow: string;
   title?: string;
   body?: string[];
   list?: string[];
-  layout?: "hero" | "copy" | "bio" | "contact";
+  layout?: "hero" | "statement" | "copy" | "bio" | "contact";
 };
 
 const sections: Section[] = [
   {
+    id: "hero",
     eyebrow: "Information",
-    layout: "hero",
-    body: ["JB52 is a full-service creative studio based in New York City."]
+    layout: "hero"
   },
   {
+    id: "information",
+    eyebrow: "Information",
+    layout: "statement",
+    body: ["JB52 is a brand building. Creative agency based in New York City"]
+  },
+  {
+    id: "why-we-exist",
+    eyebrow: "Why we exist",
+    layout: "copy",
+    body: [
+      "We exist to provide fat free, top quality thinking, smart brand ideas and top notch service with one and one goal: Help our clients grow their businesses and overcome their business challenges."
+    ]
+  },
+  {
+    id: "problems-we-solve",
     eyebrow: "Problem we solve",
     layout: "copy",
     body: [
@@ -28,6 +44,7 @@ const sections: Section[] = [
     ]
   },
   {
+    id: "principles",
     eyebrow: "Our principles",
     layout: "copy",
     body: [
@@ -39,6 +56,7 @@ const sections: Section[] = [
     ]
   },
   {
+    id: "what-we-do",
     eyebrow: "What we do",
     layout: "copy",
     list: [
@@ -52,12 +70,14 @@ const sections: Section[] = [
     ]
   },
   {
+    id: "who-we-are",
     eyebrow: "Bio / Profile",
     layout: "bio",
     title: "Javier Bonilla",
     body: ["Founder", "Full bio coming soon."]
   },
   {
+    id: "contact",
     eyebrow: "Contact",
     layout: "contact",
     body: [
@@ -68,12 +88,22 @@ const sections: Section[] = [
   }
 ];
 
-const introFrames = ["light", "dark", "light", "dark", "light"] as const;
+const introFrames = ["light", "dark", "light", "dark", "light", "dark", "light", "dark"] as const;
+
+const navItems = [
+  { id: "why-we-exist", label: "Why we exist" },
+  { id: "problems-we-solve", label: "Problems we solve" },
+  { id: "principles", label: "Principles" },
+  { id: "what-we-do", label: "What we do" },
+  { id: "who-we-are", label: "Who we are" },
+  { id: "contact", label: "Contact" }
+] as const;
 
 export function ScrollySite() {
   const [introStep, setIntroStep] = useState(0);
   const [introDone, setIntroDone] = useState(false);
   const [activeSection, setActiveSection] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -140,24 +170,69 @@ export function ScrollySite() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (!menuOpen) {
+      return;
+    }
+
+    const closeMenu = () => {
+      if (window.innerWidth > 840) {
+        setMenuOpen(false);
+      }
+    };
+    window.addEventListener("resize", closeMenu);
+
+    return () => window.removeEventListener("resize", closeMenu);
+  }, [menuOpen]);
+
   const introTheme = introFrames[introStep];
+  const leftNavItems = navItems.slice(0, 3);
+  const rightNavItems = navItems.slice(3);
 
   return (
     <div className="page-shell">
       <header className={`site-nav ${introDone ? "site-nav--visible" : ""}`}>
-        <button className="nav-link nav-link--mobile" type="button" aria-label="Menu">
+        <button
+          aria-expanded={menuOpen}
+          aria-label="Toggle menu"
+          className="nav-link nav-link--mobile"
+          onClick={() => setMenuOpen((open) => !open)}
+          type="button"
+        >
+          <span />
           <span />
           <span />
         </button>
-        <a className="nav-link nav-link--desktop" href="#information">
-          Information
-        </a>
+        <nav className="nav-group nav-group--left" aria-label="Primary">
+          {leftNavItems.map((item) => (
+            <a className="nav-link nav-link--desktop" href={`#${item.id}`} key={item.id}>
+              {item.label}
+            </a>
+          ))}
+        </nav>
         <a className="nav-brand" href="#information" aria-label="JB52 home">
           <Logo className="nav-brand__logo" />
         </a>
-        <a className="nav-link nav-link--desktop" href="#contact">
-          Contact
-        </a>
+        <nav className="nav-group nav-group--right" aria-label="Primary">
+          {rightNavItems.map((item) => (
+            <a className="nav-link nav-link--desktop" href={`#${item.id}`} key={item.id}>
+              {item.label}
+            </a>
+          ))}
+        </nav>
+
+        <div className={`nav-menu ${menuOpen ? "nav-menu--open" : ""}`}>
+          {navItems.map((item) => (
+            <a
+              className="nav-menu__link"
+              href={`#${item.id}`}
+              key={item.id}
+              onClick={() => setMenuOpen(false)}
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
       </header>
 
       <div
@@ -177,20 +252,31 @@ export function ScrollySite() {
               className="story-step"
               data-index={index}
               data-story-section
-              id={index === 0 ? "information" : index === sections.length - 1 ? "contact" : undefined}
+              id={section.id}
               key={section.eyebrow}
             >
-              <div className={`story-panel ${isActive ? "story-panel--active" : ""}`}>
+              <div
+                className={`story-panel ${section.layout === "hero" ? "story-panel--hero" : ""} ${
+                  isActive ? "story-panel--active" : ""
+                }`}
+              >
                 <div
                   className={`story-panel__grid ${section.layout === "hero" ? "story-panel__grid--hero" : ""}`}
                 >
-                  {section.layout === "hero" ? null : (
+                  {section.layout === "hero" || section.layout === "statement" || section.layout === "contact" ? null : (
                     <p className="story-panel__eyebrow story-reveal story-reveal--1">{section.eyebrow}</p>
                   )}
 
                   {section.layout === "hero" ? (
                     <div className="hero-panel">
-                      <Logo className="hero-panel__logo story-reveal story-reveal--2" />
+                      <Image
+                        alt="JB52 wordmark"
+                        className="hero-panel__logo story-reveal story-reveal--2"
+                        priority
+                        src="/assets/jb52-wordmark-full.svg"
+                        width={780}
+                        height={260}
+                      />
                       <h2 className="hero-panel__lede story-reveal story-reveal--3">{section.body?.[0]}</h2>
                     </div>
                   ) : null}
@@ -214,6 +300,16 @@ export function ScrollySite() {
                           ))}
                         </div>
                       ) : null}
+                    </div>
+                  ) : null}
+
+                  {section.layout === "statement" ? (
+                    <div className="statement-panel">
+                      {section.body?.map((paragraph) => (
+                        <h2 className="statement-panel__body story-reveal story-reveal--2" key={paragraph}>
+                          {paragraph}
+                        </h2>
+                      ))}
                     </div>
                   ) : null}
 
