@@ -111,7 +111,7 @@ const introFrames = ["light", "dark", "light", "dark", "light", "dark", "light",
 const navItems = [
   { id: "why-we-exist", label: "Why we exist" },
   { id: "problems-we-solve", label: "Problems we solve" },
-  { id: "principles", label: "Principles" },
+  { id: "principles-cards", label: "Principles" },
   { id: "what-we-do", label: "What we do" },
   { id: "who-we-are", label: "How we work" },
   { id: "contact", label: "Contact" }
