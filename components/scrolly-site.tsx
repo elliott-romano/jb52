@@ -32,7 +32,7 @@ const sections: Section[] = [
     id: "hero",
     eyebrow: "Information",
     layout: "hero",
-    body: ["JB52 is a brand building. Creative agency based in New York City"]
+    body: ["JB52 is a full-service brand building creative studio based in New York City."]
   },
   {
     id: "why-we-exist",
@@ -51,18 +51,18 @@ const sections: Section[] = [
       "We believe in a flat free process where brands have always access to top senior talent that comes with extensive agency experience. No red tape. No BS."
     ]
   },
-  {
-    id: "principles",
-    eyebrow: "Our principles",
-    layout: "copy",
-    body: [
-      "What matters to our clients matters to us. We are consumer and business focused. We are not industry obsessed.",
-      "We believe that in an overcommunicated world a simple clear ownable and distinctive brand idea is everything and imperative for survival.",
-      "Smart meaningful great creative cures everything.",
-      "We don't chase awards. We chase the reward of helping our client grow their business.",
-      "We believe in joy, because to us this is not a job is our absolute passion."
-    ]
-  },
+  // {
+  //   id: "principles",
+  //   eyebrow: "Our principles",
+  //   layout: "copy",
+  //   body: [
+  //     "What matters to our clients matters to us. We are consumer and business focused. We are not industry obsessed.",
+  //     "We believe that in an overcommunicated world a simple clear ownable and distinctive brand idea is everything and imperative for survival.",
+  //     "Smart meaningful great creative cures everything.",
+  //     "We don't chase awards. We chase the reward of helping our client grow their business.",
+  //     "We believe in joy, because to us this is not a job is our absolute passion."
+  //   ]
+  // },
   {
     id: "principles-cards",
     eyebrow: "Our principles",
@@ -126,6 +126,7 @@ export function ScrollySite() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activePrinciple, setActivePrinciple] = useState(0);
   const [activeService, setActiveService] = useState(0);
+  const [heroLedeVisible, setHeroLedeVisible] = useState(false);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -186,11 +187,46 @@ export function ScrollySite() {
     };
   }, []);
 
-  const renderSplitText = (text: string) =>
+  useEffect(() => {
+    let frameId = 0;
+
+    const updateHeroLede = () => {
+      const heroSection = document.getElementById("hero");
+
+      if (!heroSection) {
+        return;
+      }
+
+      const rect = heroSection.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const scrollableDistance = Math.max(heroSection.offsetHeight - viewportHeight, 1);
+      const rawProgress = -rect.top / scrollableDistance;
+      const progress = Math.min(Math.max(rawProgress, 0), 1);
+
+      setHeroLedeVisible(progress > 0.12);
+    };
+
+    const onScroll = () => {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(updateHeroLede);
+    };
+
+    updateHeroLede();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
+  const renderSplitText = (text: string, className = "services-panel__char") =>
     text.split("").map((character, charIndex) => (
       <span
         aria-hidden="true"
-        className="services-panel__char"
+        className={className}
         key={`${text}-${charIndex}`}
         style={{ transitionDelay: `${Math.min(charIndex * 14, 360)}ms` }}
       >
@@ -406,7 +442,12 @@ export function ScrollySite() {
                         width={780}
                         height={260}
                       />
-                      <h2 className="hero-panel__lede story-reveal story-reveal--3">{section.body?.[0]}</h2>
+                      <h2
+                        aria-label={section.body?.[0]}
+                        className={`hero-panel__lede ${heroLedeVisible ? "hero-panel__lede--visible" : ""}`}
+                      >
+                        {section.body?.[0] ? renderSplitText(section.body[0], "hero-panel__char") : null}
+                      </h2>
                     </div>
                   ) : null}
 
@@ -530,7 +571,12 @@ export function ScrollySite() {
                         <div className="bio-panel__identity">
                           <p className="bio-panel__name story-reveal story-reveal--2">{section.title}</p>
                           <p className="bio-panel__role story-reveal story-reveal--3">{section.body?.[0]}</p>
-                          <a className="bio-panel__link story-reveal story-reveal--3" href="#contact">
+                          <a
+                            className="bio-panel__link story-reveal story-reveal--3"
+                            href="https://javier-bonilla.com/"
+                            rel="noreferrer"
+                            target="_blank"
+                          >
                             View Portfolio
                           </a>
                         </div>

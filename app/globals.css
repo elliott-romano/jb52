@@ -294,17 +294,21 @@ button {
   width: 100%;
   display: grid;
   grid-template-columns:
-    minmax(8rem, 16rem)
+    minmax(0, 1fr)
     minmax(0, 42rem)
-    minmax(8rem, 16rem);
+    minmax(0, 1fr);
   column-gap: clamp(1.5rem, 6vw, 7rem);
   align-items: stretch;
   justify-content: center;
   min-height: calc(100svh - var(--nav-height) - 2rem);
+  position: relative;
 }
 
 .story-panel__eyebrow {
-  grid-column: 1;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
   margin: 0;
   display: flex;
   align-items: center;
@@ -312,7 +316,6 @@ button {
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--muted);
-  min-height: calc(100svh - var(--nav-height) - 2rem);
 }
 
 .hero-panel,
@@ -351,6 +354,31 @@ button {
   font-weight: 400;
   text-align: center;
   color: #ffffff;
+  opacity: 0;
+  transform: translateY(1rem);
+  transition:
+    opacity 700ms var(--ease-soft),
+    transform 900ms var(--ease-soft);
+  will-change: opacity, transform;
+}
+
+.hero-panel__lede--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero-panel__char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.45rem);
+  transition:
+    opacity 520ms var(--ease-soft),
+    transform 700ms var(--ease-soft);
+}
+
+.hero-panel__lede--visible .hero-panel__char {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .story-panel__grid--hero .story-panel__eyebrow {
@@ -380,12 +408,13 @@ button {
 }
 
 .services-panel__eyebrow {
-  grid-column: 1;
-  grid-row: 1;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
   margin: 0;
   display: flex;
   align-items: center;
-  min-height: calc(100svh - var(--nav-height) - 2rem);
   font-size: 0.82rem;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -398,12 +427,12 @@ button {
 }
 
 .principles-cards-panel__eyebrow {
-  grid-column: 1 / 4;
-  grid-row: 1;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
-  align-self: stretch;
-  min-height: calc(100svh - var(--nav-height) - 2rem);
   margin: 0;
   font-size: 0.82rem;
   line-height: 1;
@@ -647,7 +676,7 @@ button {
   display: grid;
   grid-template-columns: minmax(18rem, 24rem) minmax(16rem, 20rem) minmax(20rem, 28rem);
   gap: clamp(1.25rem, 3vw, 2.75rem);
-  align-items: start;
+  align-items: center;
   align-self: center;
   min-height: calc(100svh - var(--nav-height) - 2rem);
   padding: 2rem 0;
@@ -665,7 +694,7 @@ button {
   font-family: var(--font-sans);
   font-weight: 400;
   min-width: 0;
-  align-self: start;
+  align-self: center;
 }
 
 .bio-panel__name {
@@ -680,7 +709,7 @@ button {
 .bio-panel__profile {
   display: grid;
   gap: 0.55rem;
-  align-self: start;
+  align-self: center;
 }
 
 .bio-panel__portrait {
@@ -703,11 +732,11 @@ button {
 
 .bio-panel__identity {
   display: grid;
-  gap: 0.12rem;
+  gap: 0.02rem;
 }
 
 .bio-panel__meta {
-  align-self: start;
+  align-self: center;
   max-width: 28rem;
   min-width: 0;
 }
@@ -730,6 +759,10 @@ button {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.12em;
+}
+
+.bio-panel__link::after {
+  content: " ↗";
 }
 
 .contact-panel {
@@ -807,15 +840,27 @@ button {
     align-items: start;
   }
 
-  .story-panel__grid--principles-cards {
+  .story-panel__grid--principles-cards,
+  .story-panel__grid--services-scroll {
     grid-template-columns: 1fr;
     column-gap: 0;
   }
 
+  .story-panel__grid--principles-cards {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
   .principles-cards-panel__eyebrow {
+    position: static;
     grid-column: auto;
+    order: 0;
+    transform: none;
     display: block;
-    margin-bottom: 1rem;
+    width: 100%;
+    margin: 0 0 1.25rem;
     min-height: auto;
     align-self: auto;
     font-size: 0.95rem;
@@ -826,10 +871,20 @@ button {
 
   .principles-cards-panel {
     grid-column: auto;
+    order: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    min-height: auto;
+    width: 100%;
   }
 
   .story-panel__eyebrow {
+    position: static;
     grid-column: auto;
+    transform: none;
     display: block;
     margin-bottom: 1rem;
     min-height: auto;
@@ -847,9 +902,13 @@ button {
   }
 
   .copy-panel,
+  .services-panel,
   .principles-cards-panel,
   .bio-panel,
   .contact-panel {
+    grid-column: auto;
+    width: 100%;
+    max-width: none;
     min-height: auto;
     padding-top: 0;
   }
@@ -864,7 +923,20 @@ button {
 
   .principles-cards-panel__stack {
     width: 100%;
-    height: min(66vh, 34rem);
+    max-width: none;
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+  }
+
+  .principles-cards-panel__dots {
+    position: static;
+    transform: none;
+    margin-top: 1rem;
   }
 
   .services-panel {
@@ -873,8 +945,10 @@ button {
   }
 
   .services-panel__eyebrow {
+    position: static;
     grid-column: auto;
     grid-row: auto;
+    transform: none;
     display: block;
     min-height: auto;
     margin-bottom: 1rem;
@@ -894,8 +968,14 @@ button {
   }
 
   .principle-card {
+    inset: auto;
+    width: 100%;
+    min-height: min(56svh, 32rem);
+    max-height: none;
     padding: 1.5rem;
-    border-radius: 1rem;
+    border-radius: 8px;
+    left: 0;
+    right: 0;
   }
 
   .principle-card__index {
@@ -908,10 +988,23 @@ button {
     line-height: 1.08;
   }
 
+  .principle-card--current {
+    position: relative;
+    opacity: 1;
+    transform: none;
+    z-index: 2;
+  }
+
+  .principle-card--next,
+  .principle-card--past {
+    display: none;
+  }
+
   .copy-panel__body,
   .copy-panel__list,
   .bio-panel__lead,
   .bio-panel__profile,
+  .bio-panel__identity,
   .bio-panel__meta,
   .bio-panel__role,
   .bio-panel__note,
@@ -935,6 +1028,10 @@ button {
     max-width: 22rem;
   }
 
+  .bio-panel__identity {
+    width: 100%;
+  }
+
   .copy-panel__body,
   .contact-panel__prompt {
     font-size: clamp(1.7rem, 7vw, 2.35rem);
@@ -942,6 +1039,7 @@ button {
   }
 
   .bio-panel__portrait {
+    width: 100%;
     max-width: 22rem;
   }
 }
