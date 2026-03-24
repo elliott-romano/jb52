@@ -85,7 +85,7 @@ const sections: Section[] = [
   },
   {
     id: "who-we-are",
-    eyebrow: "Who we are",
+    eyebrow: "How we work",
     layout: "bio",
     title: "Javier Bonilla",
     lead: "With vast access to a network of top proven talent, I will lead and assemble a team that fits the specific needs of each project.",
@@ -113,7 +113,7 @@ const navItems = [
   { id: "problems-we-solve", label: "Problems we solve" },
   { id: "principles", label: "Principles" },
   { id: "what-we-do", label: "What we do" },
-  { id: "who-we-are", label: "Who we are" },
+  { id: "who-we-are", label: "How we work" },
   { id: "contact", label: "Contact" }
 ] as const;
 
