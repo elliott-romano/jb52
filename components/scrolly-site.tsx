@@ -101,7 +101,7 @@ const sections: Section[] = [
     body: [
       "Have a project or collaboration in mind?",
       "Please email us at:",
-      "hello@JB52.com"
+      "javier.bonilla@jb52.com"
     ]
   }
 ];
@@ -231,6 +231,19 @@ export function ScrollySite() {
         style={{ transitionDelay: `${Math.min(charIndex * 14, 360)}ms` }}
       >
         {character === " " ? "\u00A0" : character}
+      </span>
+    ));
+
+  const renderSplitWords = (text: string, className = "hero-panel__word") =>
+    text.split(" ").map((word, wordIndex) => (
+      <span
+        aria-hidden="true"
+        className={className}
+        key={`${word}-${wordIndex}`}
+        style={{ transitionDelay: `${Math.min(wordIndex * 55, 440)}ms` }}
+      >
+        {word}
+        {wordIndex < text.split(" ").length - 1 ? "\u00A0" : ""}
       </span>
     ));
 
@@ -446,7 +459,7 @@ export function ScrollySite() {
                         aria-label={section.body?.[0]}
                         className={`hero-panel__lede ${heroLedeVisible ? "hero-panel__lede--visible" : ""}`}
                       >
-                        {section.body?.[0] ? renderSplitText(section.body[0], "hero-panel__char") : null}
+                        {section.body?.[0] ? renderSplitWords(section.body[0]) : null}
                       </h2>
                     </div>
                   ) : null}
@@ -593,7 +606,7 @@ export function ScrollySite() {
                       <h2 className="contact-panel__prompt story-reveal story-reveal--3">{section.body?.[1]}</h2>
                       <a
                         className="contact-panel__email story-reveal story-reveal--4"
-                        href="mailto:hello@JB52.com"
+                        href="mailto:javier.bonilla@jb52.com"
                       >
                         {section.body?.[2]}
                       </a>
