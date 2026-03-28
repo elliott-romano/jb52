@@ -32,7 +32,7 @@ const sections: Section[] = [
     id: "hero",
     eyebrow: "Information",
     layout: "hero",
-    body: ["JB52 is a full-service brand building creative studio based in New York City."]
+    body: ["JB52 is a full service brand building creative studio"]
   },
   {
     id: "why-we-exist",
@@ -47,8 +47,7 @@ const sections: Section[] = [
     eyebrow: "Problem we solve",
     layout: "copy",
     body: [
-      "Often traditional big agencies get unnecessarily complex in the way they operate. Work suffers and consistency becomes a challenge.",
-      "We believe in a flat free process where brands have always access to top senior talent that comes with extensive agency experience. No red tape. No BS."
+      "Often traditional big agencies get unnecessarily complex in the way they operate. Work suffers and consistency becomes a challenge. We believe in a process where brands always have access to top senior talent that comes with extensive agency experience. No red tape. No BS."
     ]
   },
   // {
@@ -74,11 +73,12 @@ const sections: Section[] = [
     eyebrow: "What we do",
     layout: "servicesScroll",
     list: [
-      "Brand Campaign Ideas",
-      "Communication Ideas & toolkits",
+      "Brand & Campaign Ideas",
+      "Communication Ideas",
       "Creative Strategy",
       "Brand Visual Identity",
       "Initiative conceptualization",
+      "Multi touchpoint toolkits and go to market",
       "Product naming",
       "Production"
     ]
@@ -110,7 +110,7 @@ const introFrames = ["light", "dark", "light", "dark", "light", "dark", "light",
 
 const navItems = [
   { id: "why-we-exist", label: "Why we exist" },
-  { id: "problems-we-solve", label: "Problems we solve" },
+  { id: "problems-we-solve", label: "Problem we solve" },
   { id: "principles-cards", label: "Principles" },
   { id: "what-we-do", label: "What we do" },
   { id: "who-we-are", label: "How we work" },
