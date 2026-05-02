@@ -995,7 +995,7 @@ button {
   .hero-panel__lede {
     max-width: min(100%, 22rem);
     font-size: clamp(1.2rem, 5.2vw, 1.6rem);
-    line-height: 1.12;
+    line-height: 1.17;
     letter-spacing: -0.035em;
     text-wrap: balance;
   }
@@ -1077,7 +1077,7 @@ button {
   .principle-card__body {
     max-width: none;
     font-size: clamp(1.85rem, 6.8vw, 2.65rem);
-    line-height: 1.02;
+    line-height: 1.07;
   }
 
   .principles-cards-panel__rail {
@@ -1121,13 +1121,13 @@ button {
 
   .services-panel__list {
     width: 100%;
-    gap: 0.75rem;
+    gap: 0.95rem;
   }
 
   .services-panel__item {
     max-width: none;
     font-size: clamp(1.7rem, 7vw, 2.35rem);
-    line-height: 1.06;
+    line-height: 1.11;
   }
 
   .copy-panel__body,
@@ -1181,7 +1181,7 @@ button {
 
   .bio-feature-panel__note {
     font-size: 1rem;
-    line-height: 1.15;
+    line-height: 1.5;
     color: var(--foreground);
   }
 
@@ -1208,7 +1208,7 @@ button {
   .copy-panel__body,
   .contact-panel__prompt {
     font-size: clamp(1.7rem, 7vw, 2.35rem);
-    line-height: 1.06;
+    line-height: 1.11;
   }
 
   .contact-panel__prompt,
