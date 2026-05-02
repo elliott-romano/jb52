@@ -18,7 +18,8 @@ type Section = {
     | "hero"
     | "statement"
     | "copy"
-    | "principlesCards"
+    | "chapter"
+    | "principlesMarquee"
     | "servicesScroll"
     | "bioFeature"
     | "contact";
@@ -46,7 +47,7 @@ const sections: Section[] = [
     eyebrow: "Why we exist",
     layout: "copy",
     body: [
-      "We exist to provide fat free, top quality thinking, smart brand ideas and top notch service with one and one goal: Help our clients grow their businesses and overcome their business challenges."
+      "We are a modern & dynamic brand building ad agency. We exist to provide fat free, top quality thinking and ideas, with only one goal: Help our clients grow their business."
     ]
   },
   {
@@ -54,7 +55,7 @@ const sections: Section[] = [
     eyebrow: "Problem we solve",
     layout: "copy",
     body: [
-      "Often traditional big agencies get unnecessarily complex in the way they operate. Work suffers and consistency becomes a challenge. We believe in a process where brands always have access to top senior talent that comes with extensive agency experience. No red tape. No BS."
+      "We believe that clients should have access to top talent & quality thinking without having to deal with the complexity of traditional agencies. No red tape. No layers. No BS."
     ]
   },
   // {
@@ -70,9 +71,15 @@ const sections: Section[] = [
   //   ]
   // },
   {
+    id: "principles-intro",
+    eyebrow: "",
+    layout: "chapter",
+    body: ["Our principles"]
+  },
+  {
     id: "principles-cards",
     eyebrow: "Our principles",
-    layout: "principlesCards",
+    layout: "principlesMarquee",
     principles: [...interactivePrinciples]
   },
   {
@@ -80,13 +87,10 @@ const sections: Section[] = [
     eyebrow: "What we do",
     layout: "servicesScroll",
     list: [
-      "Brand & Campaign Ideas",
-      "Communication Ideas",
-      "Creative Strategy",
-      "Brand Visual Identity",
+      "Brand and campaign ideas",
+      "Creative strategy",
+      "Visual Identity",
       "Initiative conceptualization",
-      "Multi touchpoint toolkits and go to market",
-      "Product naming",
       "Production"
     ]
   },
@@ -95,7 +99,7 @@ const sections: Section[] = [
     eyebrow: "How we work",
     layout: "copy",
     body: [
-      "With vast access to a network of top proven talent, we lead and assemble a team that fits the specific needs of each project."
+      "With a vast access to a network of top talent, we will lead and assemble a support team that is tailored for each project."
     ]
   },
   {
@@ -121,10 +125,8 @@ const sections: Section[] = [
 
 const introFrames = ["light", "dark", "light", "dark", "light", "dark", "light", "dark"] as const;
 const HERO_LEDE_DELAY_MS = 350;
-const PRINCIPLES_AUTO_ADVANCE_MS = 6400;
-const WHY_WE_EXIST_UNDERLINE_TEXT =
-  "Help our clients grow their businesses and overcome their business challenges.";
-const PROBLEM_WE_SOLVE_STRIKETHROUGH_TEXT = "No red tape. No BS.";
+const WHY_WE_EXIST_UNDERLINE_TEXT = "Help our clients grow their business.";
+const PROBLEM_WE_SOLVE_STRIKETHROUGH_TEXT = "No red tape. No layers. No BS.";
 
 const navItems = [
   { id: "why-we-exist", label: "Why we exist" },
@@ -136,14 +138,25 @@ const navItems = [
 ] as const;
 
 const whatWeDoItems = sections.find((section) => section.id === "what-we-do")?.list ?? [];
-const PRINCIPLES_SECTION_INDEX = sections.findIndex((section) => section.id === "principles-cards");
+const darkSectionIds = new Set(["problems-we-solve", "what-we-do", "contact"]);
+const sectionThemeColors: Record<string, [number, number, number]> = {
+  hero: [5, 5, 5],
+  "why-we-exist": [247, 245, 241],
+  "problems-we-solve": [5, 5, 5],
+  "principles-intro": [247, 245, 241],
+  "principles-cards": [247, 245, 241],
+  "what-we-do": [5, 5, 5],
+  "who-we-are": [247, 245, 241],
+  "javier-bonilla": [22, 22, 22],
+  contact: [5, 5, 5]
+};
+const DEFAULT_THEME_COLOR: [number, number, number] = [247, 245, 241];
 
 export function ScrollySite() {
   const [introStep, setIntroStep] = useState(0);
   const [introDone, setIntroDone] = useState(false);
   const [activeSection, setActiveSection] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activePrinciple, setActivePrinciple] = useState(0);
   const [activeService, setActiveService] = useState(0);
   const [heroLedeVisible, setHeroLedeVisible] = useState(false);
   const [whyWeExistUnderlineProgress, setWhyWeExistUnderlineProgress] = useState(0);
@@ -236,6 +249,77 @@ export function ScrollySite() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  useEffect(() => {
+    let frameId = 0;
+
+    const updateThemeColor = () => {
+      const stepNodes = document.querySelectorAll<HTMLElement>("[data-story-section]");
+      if (stepNodes.length === 0) {
+        return;
+      }
+      const viewportHeight = window.innerHeight;
+
+      // Once the last section's top reaches the viewport top, lock the theme
+      // color to that section's color so the page bottom and footer feel like
+      // one continuous block (no lerp toward the default light color).
+      const lastNode = stepNodes[stepNodes.length - 1];
+      const lastRect = lastNode.getBoundingClientRect();
+      if (lastRect.top <= 0) {
+        const [lr, lg, lb] = sectionThemeColors[lastNode.id] ?? DEFAULT_THEME_COLOR;
+        document.documentElement.style.setProperty(
+          "--theme-color",
+          `rgb(${lr}, ${lg}, ${lb})`
+        );
+        return;
+      }
+
+      let r = 0;
+      let g = 0;
+      let b = 0;
+      let totalFraction = 0;
+
+      stepNodes.forEach((node) => {
+        const rect = node.getBoundingClientRect();
+        const top = Math.max(rect.top, 0);
+        const bottom = Math.min(rect.bottom, viewportHeight);
+        const visible = Math.max(bottom - top, 0);
+        if (visible <= 0) {
+          return;
+        }
+        const fraction = visible / viewportHeight;
+        const [cr, cg, cb] = sectionThemeColors[node.id] ?? DEFAULT_THEME_COLOR;
+        r += cr * fraction;
+        g += cg * fraction;
+        b += cb * fraction;
+        totalFraction += fraction;
+      });
+
+      if (totalFraction <= 0) {
+        return;
+      }
+
+      document.documentElement.style.setProperty(
+        "--theme-color",
+        `rgb(${Math.round(r / totalFraction)}, ${Math.round(g / totalFraction)}, ${Math.round(b / totalFraction)})`
+      );
+    };
+
+    const onScroll = () => {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(updateThemeColor);
+    };
+
+    updateThemeColor();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -455,19 +539,50 @@ export function ScrollySite() {
   }, [menuOpen]);
 
   useEffect(() => {
-    if (activeSection !== PRINCIPLES_SECTION_INDEX) {
-      setActivePrinciple(0);
-      return;
-    }
+    let frameId = 0;
+    const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
 
-    setActivePrinciple(0);
+    const updatePrinciplesMarquee = () => {
+      const section = document.getElementById("principles-cards");
+      if (!section) {
+        return;
+      }
+      const items = section.querySelectorAll<HTMLElement>(
+        ".principles-marquee-panel__item"
+      );
+      if (items.length === 0) {
+        return;
+      }
 
-    const intervalId = window.setInterval(() => {
-      setActivePrinciple((current) => (current + 1) % interactivePrinciples.length);
-    }, PRINCIPLES_AUTO_ADVANCE_MS);
+      const rect = section.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const scrollableDistance = Math.max(section.offsetHeight - viewportHeight, 1);
+      const rawProgress = -rect.top / scrollableDistance;
+      const progress = Math.min(Math.max(rawProgress, 0), 1);
+      const itemCount = items.length;
 
-    return () => window.clearInterval(intervalId);
-  }, [activeSection]);
+      items.forEach((item, index) => {
+        const localProgress = (progress - index / itemCount) * itemCount;
+        const clamped = Math.min(Math.max(localProgress, 0), 1);
+        item.style.setProperty("--reveal", String(easeOutQuart(clamped)));
+      });
+    };
+
+    const onScroll = () => {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(updatePrinciplesMarquee);
+    };
+
+    updatePrinciplesMarquee();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
 
   const introTheme = introFrames[introStep];
   const leftNavItems = navItems.slice(0, 3);
@@ -482,26 +597,30 @@ export function ScrollySite() {
 
     return (
       <span className="copy-panel__emphasis" aria-label={text}>
-        {text.split(" ").map((word, wordIndex, words) => (
-          <span aria-hidden="true" className="copy-panel__emphasis-word" key={`${word}-${wordIndex}`}>
-            {word.split("").map((character) => {
-              const currentIndex = charIndex;
-              charIndex += 1;
-              const isVisible = progress * text.length > currentIndex;
+        {text.split(" ").map((word, wordIndex, words) => {
+          const wordChars =
+            wordIndex < words.length - 1 ? `${word}\u00A0`.split("") : word.split("");
 
-              return (
-                <span
-                  aria-hidden="true"
-                  className={`${charClassName} ${isVisible ? visibleClassName : ""}`}
-                  key={`${word}-${wordIndex}-${currentIndex}`}
-                >
-                  {character}
-                </span>
-              );
-            })}
-            {wordIndex < words.length - 1 ? "\u00A0" : ""}
-          </span>
-        ))}
+          return (
+            <span aria-hidden="true" className="copy-panel__emphasis-word" key={`${word}-${wordIndex}`}>
+              {wordChars.map((character) => {
+                const currentIndex = charIndex;
+                charIndex += 1;
+                const isVisible = progress * text.length > currentIndex;
+
+                return (
+                  <span
+                    aria-hidden="true"
+                    className={`${charClassName} ${isVisible ? visibleClassName : ""}`}
+                    key={`${word}-${wordIndex}-${currentIndex}`}
+                  >
+                    {character}
+                  </span>
+                );
+              })}
+            </span>
+          );
+        })}
       </span>
     );
   };
@@ -546,6 +665,7 @@ export function ScrollySite() {
 
   return (
     <div className="page-shell">
+      <div aria-hidden="true" className="theme-bg" />
       <header className={`site-nav ${introDone ? "site-nav--visible" : ""}`}>
         <button
           aria-expanded={menuOpen}
@@ -609,7 +729,7 @@ export function ScrollySite() {
           return (
             <section
               className={`story-step ${
-                section.layout === "principlesCards" ? "story-step--principles-cards" : ""
+                section.layout === "principlesMarquee" ? "story-step--principles-marquee" : ""
               } ${section.layout === "servicesScroll" ? "story-step--services-scroll" : ""
               }`}
               data-index={index}
@@ -617,28 +737,30 @@ export function ScrollySite() {
               id={section.id}
               key={section.eyebrow}
               style={
-                section.layout === "principlesCards"
+                section.layout === "principlesMarquee"
                   ? ({ ["--principle-count" as string]: section.principles?.length ?? 0 } as CSSProperties)
                   : undefined
               }
             >
               <div
                 className={`story-panel ${section.layout === "hero" ? "story-panel--hero" : ""} ${
-                  section.layout === "principlesCards" ? "story-panel--principles-cards" : ""
+                  section.layout === "principlesMarquee" ? "story-panel--principles-marquee" : ""
                 } ${section.layout === "servicesScroll" ? "story-panel--services-scroll" : ""
+                } ${section.layout === "chapter" ? "story-panel--chapter" : ""} ${
+                  darkSectionIds.has(section.id) ? "story-panel--dark" : ""
                 } ${isActive ? "story-panel--active" : ""}`}
               >
                 <div
                   className={`story-panel__grid ${section.layout === "hero" ? "story-panel__grid--hero" : ""} ${
-                    section.layout === "principlesCards" ? "story-panel__grid--principles-cards" : ""
+                    section.layout === "principlesMarquee" ? "story-panel__grid--principles-marquee" : ""
                   } ${section.layout === "servicesScroll" ? "story-panel__grid--services-scroll" : ""
                   }`}
                 >
                   {section.layout === "hero" ||
                   section.layout === "statement" ||
+                  section.layout === "chapter" ||
                   section.layout === "contact" ||
                   section.layout === "servicesScroll" ||
-                  section.layout === "principlesCards" ||
                   section.layout === "bioFeature" ? null : (
                     <p className="story-panel__eyebrow story-reveal story-reveal--1">{section.eyebrow}</p>
                   )}
@@ -721,57 +843,25 @@ export function ScrollySite() {
                     </div>
                   ) : null}
 
-                  {section.layout === "principlesCards" ? (
-                    <>
-                      <p className="principles-cards-panel__eyebrow">{section.eyebrow}</p>
-                      <div className="principles-cards-panel">
-                        <div className="principles-cards-panel__body">
-                          <div className="principles-cards-panel__current">
-                            {section.principles?.map((principle, principleIndex) => (
-                              <article
-                                aria-hidden={principleIndex !== activePrinciple}
-                                className={`principle-card ${
-                                  principleIndex === activePrinciple
-                                    ? "principle-card--current"
-                                    : principleIndex < activePrinciple
-                                      ? "principle-card--past"
-                                      : principleIndex === activePrinciple + 1
-                                        ? "principle-card--next"
-                                        : "principle-card--future"
-                                }`}
-                                key={principle}
-                              >
-                                <p className="principle-card__index">
-                                  Principle {String(principleIndex + 1).padStart(2, "0")}
-                                </p>
-                                <h2 className="principle-card__body">{principle}</h2>
-                              </article>
-                            ))}
-                          </div>
-                          <div aria-label="Principles index" className="principles-cards-panel__rail">
-                            {section.principles?.map((principle, principleIndex) => (
-                              <button
-                                aria-label={`Show principle ${principleIndex + 1}`}
-                                className={`principles-cards-panel__rail-item ${
-                                  principleIndex === activePrinciple
-                                    ? "principles-cards-panel__rail-item--active"
-                                    : principleIndex < activePrinciple
-                                      ? "principles-cards-panel__rail-item--past"
-                                      : ""
-                                }`}
-                                key={`${principleIndex + 1}-${principle}`}
-                                onClick={() => setActivePrinciple(principleIndex)}
-                                type="button"
-                              >
-                                <span className="principles-cards-panel__rail-number">
-                                  {String(principleIndex + 1).padStart(2, "0")}
-                                </span>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </>
+                  {section.layout === "chapter" ? (
+                    <div className="chapter-panel">
+                      <h2 className="chapter-panel__title">{section.body?.[0]}</h2>
+                    </div>
+                  ) : null}
+
+                  {section.layout === "principlesMarquee" ? (
+                    <div className="principles-marquee-panel">
+                      <ol className="principles-marquee-panel__list">
+                        {section.principles?.map((principle, principleIndex) => (
+                          <li className="principles-marquee-panel__item" key={principle}>
+                            <span className="principles-marquee-panel__index" aria-hidden="true">
+                              {String(principleIndex + 1).padStart(2, "0")}
+                            </span>
+                            <span className="principles-marquee-panel__text">{principle}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
                   ) : null}
 
                   {section.layout === "bioFeature" ? (
@@ -829,8 +919,11 @@ export function ScrollySite() {
       </main>
 
       <footer className="site-footer">
-        <span>JB52</span>
-        <span>© 2026</span>
+        <Logo className="site-footer__logo" />
+        <div className="site-footer__meta">
+          <span>New York, NY</span>
+          <span>© 2026</span>
+        </div>
       </footer>
     </div>
   );
