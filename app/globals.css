@@ -902,6 +902,14 @@ button {
     --body-line: 1.1;
   }
 
+  .site-footer__location {
+    display: none;
+  }
+
+  .site-footer__meta {
+    justify-content: center;
+  }
+
   .site-nav {
     grid-template-columns: 1fr auto 1fr;
   }

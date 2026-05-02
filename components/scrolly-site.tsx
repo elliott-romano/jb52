@@ -921,7 +921,7 @@ export function ScrollySite() {
       <footer className="site-footer">
         <Logo className="site-footer__logo" />
         <div className="site-footer__meta">
-          <span>New York, NY</span>
+          <span className="site-footer__location">New York, NY</span>
           <span>© 2026</span>
         </div>
       </footer>
