@@ -457,14 +457,11 @@ button {
   letter-spacing: -0.045em;
   font-family: var(--font-sans);
   font-weight: 400;
-  color: rgba(17, 17, 17, 0.5);
+  color: rgba(17, 17, 17, 0.72);
   transition: color 480ms var(--ease-soft);
 }
 
-.services-panel__item--current {
-  color: rgba(17, 17, 17, 1);
-}
-
+.services-panel__item--current,
 .services-panel__item--past {
   color: rgba(17, 17, 17, 1);
 }
@@ -482,7 +479,7 @@ button {
 .services-panel__char {
   display: inline-block;
   color: currentColor;
-  opacity: 0.78;
+  opacity: 0.92;
   transition:
     opacity 520ms var(--ease-soft),
     color 520ms var(--ease-soft);
@@ -549,32 +546,35 @@ button {
   border-radius: 1rem;
   border: 1px solid rgba(17, 17, 17, 0.08);
   background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 18px 40px rgba(17, 17, 17, 0.08);
+  box-shadow: none;
   opacity: 0;
   transform: translateX(-92%);
   transition:
     opacity 650ms var(--ease-soft),
     transform 650ms var(--ease-soft),
-    box-shadow 650ms var(--ease-soft);
+    box-shadow 650ms var(--ease-soft),
+    background-color 650ms var(--ease-soft);
 }
 
 .principle-card--current {
   opacity: 1;
   transform: translateX(-56%);
   z-index: 4;
-  box-shadow: 0 26px 60px rgba(17, 17, 17, 0.12);
+  box-shadow: 0 24px 50px -12px rgba(17, 17, 17, 0.18);
 }
 
 .principle-card--next {
   opacity: 1;
   transform: translateX(-48%);
   z-index: 3;
+  background: rgba(250, 250, 250, 0.95);
 }
 
 .principle-card--future {
   opacity: 1;
   transform: translateX(-40%);
   z-index: 2;
+  background: rgba(245, 245, 245, 0.95);
 }
 
 .principle-card--past {
@@ -830,10 +830,6 @@ button {
   letter-spacing: -0.02em;
 }
 
-.bio-feature-panel__link::after {
-  content: " ↗";
-}
-
 .contact-panel {
   grid-column: 1 / -1;
   display: flex;
@@ -1052,36 +1048,36 @@ button {
   }
 
   .principle-card {
-    width: min(100%, 19.95rem);
+    width: min(100% - 1rem, 28rem);
     top: 50%;
     bottom: auto;
-    min-height: 28.2rem;
-    height: 28.2rem;
-    max-height: 28.2rem;
-    padding: 1.25rem;
+    min-height: min(66svh, 34rem);
+    height: min(66svh, 34rem);
+    max-height: 34rem;
+    padding: 1.6rem;
     overflow: hidden;
   }
 
   .principle-card--current {
-    transform: translate(-50%, -58%);
+    transform: translate(-50%, -56%);
   }
 
   .principle-card--next {
-    transform: translate(-50%, -52%);
+    transform: translate(-50%, -50%);
   }
 
   .principle-card--future {
-    transform: translate(-50%, -46%);
+    transform: translate(-50%, -44%);
   }
 
   .principle-card--past {
-    transform: translate(-50%, -64%);
+    transform: translate(-50%, -62%);
   }
 
   .principle-card__body {
     max-width: none;
-    font-size: clamp(1.55rem, 6.6vw, 2.2rem);
-    line-height: 1;
+    font-size: clamp(1.85rem, 6.8vw, 2.65rem);
+    line-height: 1.02;
   }
 
   .principles-cards-panel__rail {

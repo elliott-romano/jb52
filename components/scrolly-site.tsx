@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Lenis from "lenis";
 import type { CSSProperties } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/logo";
 
 type Section = {
@@ -148,6 +148,7 @@ export function ScrollySite() {
   const [heroLedeVisible, setHeroLedeVisible] = useState(false);
   const [whyWeExistUnderlineProgress, setWhyWeExistUnderlineProgress] = useState(0);
   const [problemWeSolveStrikeProgress, setProblemWeSolveStrikeProgress] = useState(0);
+  const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -156,6 +157,7 @@ export function ScrollySite() {
       touchMultiplier: 0.9,
       lerp: 0.08
     });
+    lenisRef.current = lenis;
 
     let frameId = 0;
 
@@ -169,7 +171,71 @@ export function ScrollySite() {
     return () => {
       window.cancelAnimationFrame(frameId);
       lenis.destroy();
+      lenisRef.current = null;
     };
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "ArrowDown" && event.key !== "ArrowUp") {
+        return;
+      }
+      if (event.metaKey || event.ctrlKey || event.altKey) {
+        return;
+      }
+      const target = event.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      const section = document.getElementById("what-we-do");
+      if (!section) {
+        return;
+      }
+      const rect = section.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      // Only intercept while the section is currently pinned to the viewport.
+      if (rect.top > 0 || rect.bottom < viewportHeight) {
+        return;
+      }
+
+      const scrollableDistance = Math.max(section.offsetHeight - viewportHeight, 1);
+      const itemCount = whatWeDoItems.length;
+      if (itemCount === 0) {
+        return;
+      }
+      const sectionScrolled = -rect.top;
+      const currentProgress = Math.min(Math.max(sectionScrolled / scrollableDistance, 0), 0.9999);
+      const currentIndex = Math.min(itemCount - 1, Math.floor(currentProgress * itemCount));
+
+      const direction = event.key === "ArrowDown" ? 1 : -1;
+      const targetIndex = currentIndex + direction;
+      const sectionTop = rect.top + window.scrollY;
+      const sectionBottom = sectionTop + section.offsetHeight;
+
+      let targetY: number;
+      if (targetIndex < 0) {
+        // Exit section upward.
+        targetY = sectionTop - 1;
+      } else if (targetIndex >= itemCount) {
+        // Exit section downward.
+        targetY = sectionBottom - viewportHeight + 1;
+      } else {
+        const targetProgress = (targetIndex + 0.5) / itemCount;
+        targetY = sectionTop + targetProgress * scrollableDistance;
+      }
+
+      event.preventDefault();
+      lenisRef.current?.scrollTo(targetY, { duration: 0.7 });
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
   useEffect(() => {
@@ -676,7 +742,7 @@ export function ScrollySite() {
                                 key={principle}
                               >
                                 <p className="principle-card__index">
-                                  {String(principleIndex + 1).padStart(2, "0")}
+                                  Principle {String(principleIndex + 1).padStart(2, "0")}
                                 </p>
                                 <h2 className="principle-card__body">{principle}</h2>
                               </article>
@@ -764,7 +830,7 @@ export function ScrollySite() {
 
       <footer className="site-footer">
         <span>JB52</span>
-        <span>2026</span>
+        <span>© 2026</span>
       </footer>
     </div>
   );
