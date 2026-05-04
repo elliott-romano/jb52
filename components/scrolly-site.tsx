@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Lenis from "lenis";
-import type { CSSProperties } from "react";
 import { useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/logo";
 
@@ -47,7 +46,7 @@ const sections: Section[] = [
     eyebrow: "Why we exist",
     layout: "copy",
     body: [
-      "We are a modern & dynamic brand building ad agency. We exist to provide fat free, top quality thinking and ideas, with only one goal: Help our clients grow their business."
+      "We are a modern & dynamic brand building ad studio. We exist to provide fat free, top quality thinking and ideas, with only one goal: Help our clients grow their business."
     ]
   },
   {
@@ -70,12 +69,6 @@ const sections: Section[] = [
   //     "We believe in joy, because to us this is not a job is our absolute passion."
   //   ]
   // },
-  {
-    id: "principles-intro",
-    eyebrow: "",
-    layout: "chapter",
-    body: ["Our principles"]
-  },
   {
     id: "principles-cards",
     eyebrow: "Our principles",
@@ -116,8 +109,7 @@ const sections: Section[] = [
     eyebrow: "Contact",
     layout: "contact",
     body: [
-      "Have a project or collaboration in mind?",
-      "Please email us at:",
+      "Contact us at:",
       "javier.bonilla@jb52.com"
     ]
   }
@@ -143,7 +135,6 @@ const sectionThemeColors: Record<string, [number, number, number]> = {
   hero: [5, 5, 5],
   "why-we-exist": [247, 245, 241],
   "problems-we-solve": [5, 5, 5],
-  "principles-intro": [247, 245, 241],
   "principles-cards": [247, 245, 241],
   "what-we-do": [5, 5, 5],
   "who-we-are": [247, 245, 241],
@@ -158,6 +149,7 @@ export function ScrollySite() {
   const [activeSection, setActiveSection] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeService, setActiveService] = useState(0);
+  const [activePrincipleIndex, setActivePrincipleIndex] = useState(0);
   const [heroLedeVisible, setHeroLedeVisible] = useState(false);
   const [whyWeExistUnderlineProgress, setWhyWeExistUnderlineProgress] = useState(0);
   const [problemWeSolveStrikeProgress, setProblemWeSolveStrikeProgress] = useState(0);
@@ -539,50 +531,15 @@ export function ScrollySite() {
   }, [menuOpen]);
 
   useEffect(() => {
-    let frameId = 0;
-    const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
-
-    const updatePrinciplesMarquee = () => {
-      const section = document.getElementById("principles-cards");
-      if (!section) {
-        return;
-      }
-      const items = section.querySelectorAll<HTMLElement>(
-        ".principles-marquee-panel__item"
-      );
-      if (items.length === 0) {
-        return;
-      }
-
-      const rect = section.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const scrollableDistance = Math.max(section.offsetHeight - viewportHeight, 1);
-      const rawProgress = -rect.top / scrollableDistance;
-      const progress = Math.min(Math.max(rawProgress, 0), 1);
-      const itemCount = items.length;
-
-      items.forEach((item, index) => {
-        const localProgress = (progress - index / itemCount) * itemCount;
-        const clamped = Math.min(Math.max(localProgress, 0), 1);
-        item.style.setProperty("--reveal", String(easeOutQuart(clamped)));
-      });
-    };
-
-    const onScroll = () => {
-      window.cancelAnimationFrame(frameId);
-      frameId = window.requestAnimationFrame(updatePrinciplesMarquee);
-    };
-
-    updatePrinciplesMarquee();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-
-    return () => {
-      window.cancelAnimationFrame(frameId);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, []);
+    const total = interactivePrinciples.length;
+    if (total <= 1) {
+      return;
+    }
+    const intervalId = window.setTimeout(() => {
+      setActivePrincipleIndex((index) => (index + 1) % total);
+    }, 5000);
+    return () => window.clearTimeout(intervalId);
+  }, [activePrincipleIndex]);
 
   const introTheme = introFrames[introStep];
   const leftNavItems = navItems.slice(0, 3);
@@ -736,11 +693,6 @@ export function ScrollySite() {
               data-story-section
               id={section.id}
               key={section.eyebrow}
-              style={
-                section.layout === "principlesMarquee"
-                  ? ({ ["--principle-count" as string]: section.principles?.length ?? 0 } as CSSProperties)
-                  : undefined
-              }
             >
               <div
                 className={`story-panel ${section.layout === "hero" ? "story-panel--hero" : ""} ${
@@ -850,18 +802,45 @@ export function ScrollySite() {
                   ) : null}
 
                   {section.layout === "principlesMarquee" ? (
-                    <div className="principles-marquee-panel">
-                      <ol className="principles-marquee-panel__list">
-                        {section.principles?.map((principle, principleIndex) => (
-                          <li className="principles-marquee-panel__item" key={principle}>
-                            <span className="principles-marquee-panel__index" aria-hidden="true">
-                              {String(principleIndex + 1).padStart(2, "0")}
-                            </span>
-                            <span className="principles-marquee-panel__text">{principle}</span>
-                          </li>
-                        ))}
-                      </ol>
-                    </div>
+                    <>
+                      <div className="principles-marquee-panel">
+                        <div
+                          className="principles-slide"
+                          key={activePrincipleIndex}
+                          aria-live="polite"
+                        >
+                          <p className="principles-slide__index">
+                            {`Principle ${String(activePrincipleIndex + 1).padStart(2, "0")}`}
+                          </p>
+                          <p className="principles-slide__text">
+                            {section.principles?.[activePrincipleIndex]}
+                          </p>
+                        </div>
+                      </div>
+                      <nav
+                        className="principles-pager"
+                        aria-label="Select a principle"
+                      >
+                        {section.principles?.map((_, index) => {
+                          const label = String(index + 1).padStart(2, "0");
+                          const isActive = index === activePrincipleIndex;
+                          return (
+                            <button
+                              type="button"
+                              key={label}
+                              className={`principles-pager__item ${
+                                isActive ? "principles-pager__item--active" : ""
+                              }`}
+                              aria-current={isActive ? "true" : undefined}
+                              aria-label={`Show principle ${label}`}
+                              onClick={() => setActivePrincipleIndex(index)}
+                            >
+                              {label}
+                            </button>
+                          );
+                        })}
+                      </nav>
+                    </>
                   ) : null}
 
                   {section.layout === "bioFeature" ? (
@@ -902,12 +881,11 @@ export function ScrollySite() {
                   {section.layout === "contact" ? (
                     <div className="contact-panel">
                       <h2 className="contact-panel__prompt story-reveal story-reveal--2">{section.body?.[0]}</h2>
-                      <h2 className="contact-panel__prompt story-reveal story-reveal--3">{section.body?.[1]}</h2>
                       <a
-                        className="contact-panel__email story-reveal story-reveal--4"
+                        className="contact-panel__email story-reveal story-reveal--3"
                         href="mailto:javier.bonilla@jb52.com"
                       >
-                        {section.body?.[2]}
+                        {section.body?.[1]}
                       </a>
                     </div>
                   ) : null}

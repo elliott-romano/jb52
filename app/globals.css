@@ -221,7 +221,7 @@ button {
 }
 
 .story-step--principles-marquee {
-  min-height: calc(100svh + var(--principle-count, 7) * 20svh);
+  min-height: 200svh;
 }
 
 .story-panel {
@@ -331,7 +331,7 @@ button {
   width: 100%;
   display: grid;
   grid-template-columns:
-    minmax(0, 1fr)
+    minmax(7rem, 1fr)
     minmax(0, 56rem)
     minmax(0, 1fr);
   column-gap: clamp(1.5rem, 6vw, 7rem);
@@ -451,51 +451,92 @@ button {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  text-align: center;
   min-height: calc(100svh - var(--nav-height) - 2rem);
   width: 100%;
   overflow: hidden;
 }
 
-.principles-marquee-panel__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.principles-slide {
   display: flex;
   flex-direction: column;
-  gap: clamp(1.1rem, 2vw, 1.85rem);
-}
-
-.principles-marquee-panel__item {
-  margin: 0;
+  align-items: center;
+  gap: clamp(0.9rem, 1.6vw, 1.5rem);
   max-width: 56rem;
-  font-family: var(--font-sans);
-  font-size: clamp(1.25rem, 1.95vw, 2.1rem);
-  line-height: 1.14;
-  letter-spacing: -0.04em;
-  font-weight: 400;
-  color: var(--foreground);
-  display: flex;
-  align-items: baseline;
-  gap: clamp(0.7rem, 1.4vw, 1.4rem);
-  --reveal: 0;
-  transform: translateX(calc((1 - var(--reveal)) * 110%));
-  opacity: var(--reveal);
-  will-change: transform, opacity;
-  text-wrap: pretty;
+  animation: principles-slide-in 850ms var(--ease-soft) both;
 }
 
-.principles-marquee-panel__index {
-  flex-shrink: 0;
-  font-size: clamp(0.72rem, 0.9vw, 0.95rem);
+.principles-slide__index {
+  margin: 0;
+  font-size: clamp(0.82rem, 1vw, 1rem);
   letter-spacing: -0.02em;
   color: var(--muted);
   font-feature-settings: "tnum";
   line-height: 1;
 }
 
-.principles-marquee-panel__text {
-  flex: 1;
-  min-width: 0;
+.principles-slide__text {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: clamp(1.5rem, 2.4vw, 2.6rem);
+  line-height: 1.14;
+  letter-spacing: -0.04em;
+  font-weight: 400;
+  color: var(--foreground);
+  text-wrap: pretty;
+}
+
+@keyframes principles-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.2rem);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.principles-pager {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  z-index: 2;
+}
+
+.principles-pager__item {
+  background: transparent;
+  border: 0;
+  padding: 0.15rem 0.25rem;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  letter-spacing: -0.02em;
+  font-feature-settings: "tnum";
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 220ms var(--ease-soft), opacity 220ms var(--ease-soft);
+  opacity: 0.6;
+}
+
+.principles-pager__item:hover,
+.principles-pager__item:focus-visible {
+  color: var(--foreground);
+  opacity: 1;
+  outline: none;
+}
+
+.principles-pager__item--active {
+  color: var(--foreground);
+  opacity: 1;
 }
 
 .copy-panel {
@@ -985,7 +1026,6 @@ button {
 
   .copy-panel,
   .services-panel,
-  .principles-marquee-panel,
   .bio-feature-panel,
   .contact-panel {
     grid-column: auto;
@@ -993,6 +1033,20 @@ button {
     max-width: none;
     min-height: auto;
     padding-top: 0;
+  }
+
+  .principles-marquee-panel {
+    padding-top: 0;
+    max-width: none;
+  }
+
+  .principles-pager {
+    top: auto;
+    right: 50%;
+    bottom: 4rem;
+    transform: translateX(50%);
+    flex-direction: row;
+    gap: 0.85rem;
   }
 
   .contact-panel {
@@ -1005,27 +1059,26 @@ button {
   }
 
   .story-step--principles-marquee {
-    min-height: calc(100svh + var(--principle-count, 7) * 22svh);
+    min-height: 200svh;
   }
 
   .story-step--services-scroll {
     min-height: calc(100svh + 4 * 38svh);
   }
 
-  .principles-marquee-panel__list {
-    gap: 0.85rem;
-  }
-
-  .principles-marquee-panel__item {
+  .principles-slide {
     max-width: none;
-    font-size: clamp(1.25rem, 4.6vw, 1.7rem);
-    line-height: 1.18;
-    letter-spacing: -0.035em;
     gap: 0.7rem;
   }
 
-  .principles-marquee-panel__index {
-    font-size: 0.7rem;
+  .principles-slide__text {
+    font-size: clamp(1.4rem, 5.5vw, 1.95rem);
+    line-height: 1.18;
+    letter-spacing: -0.035em;
+  }
+
+  .principles-slide__index {
+    font-size: 0.78rem;
   }
 
   .services-panel {
