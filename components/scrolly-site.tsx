@@ -26,7 +26,7 @@ type Section = {
 
 const interactivePrinciples = [
   "What matters to our clients matters to us. We are consumer insight and business challenge focused.",
-  "We don't chase awards. Our biggest reward is helping our clients grow their business and brands to sell more product.",
+  "We don't chase awards. Our biggest reward is helping our clients grow their business and brands.",
   "We believe that in an overcommunicated world a simple, clear, and distinctive big brand idea sits at the core of everything. It is actually more important than ever.",
   "Smart, meaningful great creative cures everything.",
   "There is a sweet spot that sits between the problem your product solves and culture.",
@@ -126,7 +126,7 @@ const navItems = [
   { id: "principles-cards", label: "Principles" },
   { id: "what-we-do", label: "What we do" },
   { id: "who-we-are", label: "How we work" },
-  { id: "contact", label: "Contact" }
+  { id: "javier-bonilla", label: "Contact" }
 ] as const;
 
 const whatWeDoItems = sections.find((section) => section.id === "what-we-do")?.list ?? [];
@@ -150,6 +150,7 @@ export function ScrollySite() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeService, setActiveService] = useState(0);
   const [activePrincipleIndex, setActivePrincipleIndex] = useState(0);
+  const [principlesActive, setPrinciplesActive] = useState(false);
   const [heroLedeVisible, setHeroLedeVisible] = useState(false);
   const [whyWeExistUnderlineProgress, setWhyWeExistUnderlineProgress] = useState(0);
   const [problemWeSolveStrikeProgress, setProblemWeSolveStrikeProgress] = useState(0);
@@ -531,15 +532,37 @@ export function ScrollySite() {
   }, [menuOpen]);
 
   useEffect(() => {
-    const total = interactivePrinciples.length;
-    if (total <= 1) {
+    const section = document.getElementById("principles-cards");
+    if (!section) {
       return;
     }
-    const intervalId = window.setTimeout(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActivePrincipleIndex(0);
+            setPrinciplesActive(true);
+          } else {
+            setPrinciplesActive(false);
+          }
+        }
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const total = interactivePrinciples.length;
+    if (total <= 1 || !principlesActive) {
+      return;
+    }
+    const timeoutId = window.setTimeout(() => {
       setActivePrincipleIndex((index) => (index + 1) % total);
-    }, 5000);
-    return () => window.clearTimeout(intervalId);
-  }, [activePrincipleIndex]);
+    }, 4200);
+    return () => window.clearTimeout(timeoutId);
+  }, [activePrincipleIndex, principlesActive]);
 
   const introTheme = introFrames[introStep];
   const leftNavItems = navItems.slice(0, 3);
